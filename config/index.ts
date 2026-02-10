@@ -5,7 +5,7 @@ export const API_URL = `${process.env.NEXT_PUBLIC_API_URL}`
 export const APP_INFO: AppInfo = {
   title: '碧桂园学校-智能运维助手',
   description: '',
-  copyright: '© 2026 碧桂园教育集团',
+  copyright: '© 碧桂园教育集团 2026',
   privacy_policy: '',
   default_language: 'zh-Hans',
   disable_session_same_site: true, // set it to true if you want to embed the chatbot in an iframe
