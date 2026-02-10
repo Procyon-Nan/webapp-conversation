@@ -1,4 +1,5 @@
 'use client'
+import { useSearchParams } from 'next/navigation'
 import type { FC } from 'react'
 import React, { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -29,6 +30,11 @@ export interface IMainProps {
 
 const Main: FC<IMainProps> = () => {
   const { t } = useTranslation()
+
+  // 自动注入wecom_userid参数到输入状态
+  const searchParams = useSearchParams()
+  const wecomUserId = searchParams.get('wecom_userid')
+
   const media = useBreakpoints()
   const isMobile = media === MediaType.mobile
   const hasSetAppConfig = APP_ID && API_KEY
@@ -81,6 +87,15 @@ const Main: FC<IMainProps> = () => {
     setNewConversationInfo,
     setExistConversationInfo,
   } = useConversation()
+
+  useEffect(() => {
+    if (wecomUserId) {
+      setCurrInputs((prev: any) => ({
+        ...prev,
+        wecom_userid: wecomUserId,
+      }))
+    }
+  }, [wecomUserId, setCurrInputs])
 
   const [conversationIdChangeBecauseOfNew, setConversationIdChangeBecauseOfNew, getConversationIdChangeBecauseOfNew] = useGetState(false)
   const [isChatStarted, { setTrue: setChatStarted, setFalse: setChatNotStarted }] = useBoolean(false)
@@ -255,11 +270,16 @@ const Main: FC<IMainProps> = () => {
             suggested_questions,
           })
         }
-        const prompt_variables = userInputsFormToPromptVariables(user_input_form)
+
+        // 过滤wecom_userid参数
+        // const prompt_variables = userInputsFormToPromptVariables(user_input_form)
+        const originalPromptVariables = userInputsFormToPromptVariables(user_input_form)
+        const filteredPromptVariables = originalPromptVariables.filter((item: any) => item.key !== 'wecom_userid')
         setPromptConfig({
           prompt_template: promptTemplate,
-          prompt_variables,
+          prompt_variables: filteredPromptVariables,
         } as PromptConfig)
+
         const outerFileUploadEnabled = !!file_upload?.enabled
         setVisionConfig({
           ...file_upload?.image,
