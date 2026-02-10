@@ -18,6 +18,7 @@ import { useImageFiles } from '@/app/components/base/image-uploader/hooks'
 import FileUploaderInAttachmentWrapper from '@/app/components/base/file-uploader-in-attachment'
 import type { FileEntity, FileUpload } from '@/app/components/base/file-uploader-in-attachment/types'
 import { getProcessedFiles } from '@/app/components/base/file-uploader-in-attachment/utils'
+import { useSearchParams } from 'next/navigation'
 
 export interface IChatProps {
   chatList: ChatItem[]
@@ -31,7 +32,7 @@ export interface IChatProps {
   isHideSendInput?: boolean
   onFeedback?: FeedbackFunc
   checkCanSend?: () => boolean
-  onSend?: (message: string, files: VisionFile[]) => void
+  onSend?: (message: string, files: VisionFile[], extraInputs?: Record<string, any>) => void
   useCurrentUserAvatar?: boolean
   isResponding?: boolean
   controlClearQuery?: number
@@ -54,6 +55,10 @@ const Chat: FC<IChatProps> = ({
 }) => {
   const { t } = useTranslation()
   const { notify } = Toast
+
+  const searchParams = useSearchParams()
+  const wecomUserId = searchParams.get('wecom_userid')
+
   const isUseInputMethod = useRef(false)
 
   const [query, setQuery] = React.useState('')
@@ -106,7 +111,8 @@ const Chat: FC<IChatProps> = ({
     }))
     const docAndOtherFiles: VisionFile[] = getProcessedFiles(attachmentFiles)
     const combinedFiles: VisionFile[] = [...imageFiles, ...docAndOtherFiles]
-    onSend(queryRef.current, combinedFiles)
+    const extraInputs = wecomUserId ? { wecom_userid: wecomUserId } : {}
+    onSend(queryRef.current, combinedFiles, extraInputs)
     if (!files.find(item => item.type === TransferMethod.local_file && !item.fileId)) {
       if (files.length) { onClear() }
       if (!isResponding) {

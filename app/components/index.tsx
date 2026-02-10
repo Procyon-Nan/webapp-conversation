@@ -354,7 +354,7 @@ const Main: FC<IMainProps> = () => {
     }
   }
 
-  const handleSend = async (message: string, files?: VisionFile[]) => {
+  const handleSend = async (message: string, files?: VisionFile[], extraInputs?: Record<string, any>) => {
     if (isResponding) {
       notify({ type: 'info', message: t('app.errorMessage.waitForResponse') })
       return
@@ -369,6 +369,10 @@ const Main: FC<IMainProps> = () => {
 
         else { toServerInputs[key] = value }
       })
+    }
+
+    if (extraInputs) {
+      Object.assign(toServerInputs, extraInputs)
     }
 
     const data: Record<string, any> = {
