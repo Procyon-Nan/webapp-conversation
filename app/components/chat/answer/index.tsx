@@ -82,7 +82,15 @@ const Answer: FC<IAnswerProps> = ({
   suggestionClick = () => { },
 }) => {
   const { id, content, feedback, agent_thoughts, workflowProcess, suggestedQuestions = [] } = item
-  const isAgentMode = !!agent_thoughts && agent_thoughts.length > 0
+  const isAgentMode = !!agent_thoughts && agent_thoughts.length > 0 && agent_thoughts.some(thought => !!thought.thought || !!thought.tool)
+
+  // 移除思考标签内容
+  const removeThinkTags = (text: string) => {
+    return text.replace(/<think>[\s\S]*?<\/think>/g, '')
+  }
+
+  // 调试信息：当前回答的ID和模式
+  console.log(`[Answer Debug] Item ID: ${id}, Mode: ${isAgentMode ? 'Agent/Reasoning Mode' : 'Normal Mode'}`, { agent_thoughts })
 
   const { t } = useTranslation()
 
@@ -202,7 +210,7 @@ const Answer: FC<IAnswerProps> = ({
                 : (isAgentMode
                   ? agentModeAnswer
                   : (
-                    <StreamdownMarkdown content={content} />
+                    <StreamdownMarkdown content={removeThinkTags(content)} />
                   ))}
               {suggestedQuestions.length > 0 && (
                 <div className="mt-3">
