@@ -164,7 +164,8 @@ const Answer: FC<IAnswerProps> = ({
       {agent_thoughts?.map((item, index) => (
         <div key={index}>
           {item.thought && (
-            <StreamdownMarkdown content={item.thought} />
+            // 去除agent模式的推理过程
+            <StreamdownMarkdown content={removeThinkTags(item.thought)} />
           )}
           {/* {item.tool} */}
           {/* perhaps not use tool */}
