@@ -14,7 +14,6 @@ import { randomString } from '@/utils/string'
 import ImageGallery from '../../base/image-gallery'
 import LoadingAnim from '../loading-anim'
 import s from '../style.module.css'
-import Thought from '../thought'
 
 function OperationBtn({ innerContent, onClick, className }: { innerContent: React.ReactNode, onClick?: () => void, className?: string }) {
   return (
@@ -167,15 +166,15 @@ const Answer: FC<IAnswerProps> = ({
             // 去除agent模式的推理过程
             <StreamdownMarkdown content={removeThinkTags(item.thought)} />
           )}
-          {/* {item.tool} */}
-          {/* perhaps not use tool */}
-          {!!item.tool && (
+
+          {/* 屏蔽工具调用 */}
+          {/*! !item.tool && (
             <Thought
               thought={item}
               allToolIcons={allToolIcons || {}}
               isFinished={!!item.observation || !isResponding}
             />
-          )}
+          ) */}
 
           {getImgs(item.message_files).length > 0 && (
             <ImageGallery srcs={getImgs(item.message_files).map(item => item.url)} />
